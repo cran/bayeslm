@@ -6,7 +6,7 @@
   This package implements an efficient sampler for Gaussian Bayesian linear regression. The package uses elliptical slice sampler instead of regular Gibbs sampler. The function has several built-in priors and user can also provide their own prior function (written as a R function).
 }
 \usage{
-bayeslm(Y, X, prior = "horseshoe", block_vec = NULL, sigma = NULL, 
+bayeslm(Y, X, prior = "horseshoe", penalize = NULL, block_vec = NULL, sigma = NULL, 
 s2 = 1, kap2 = 1, N = 20000L, burnin = 0L, thinning = 1L, vglobal = 1, 
 verb = FALSE, icept = FALSE, standardize = TRUE, singular = FALSE, 
 prior_mean = NULL, prob_vec = NULL)
@@ -16,6 +16,7 @@ prior_mean = NULL, prob_vec = NULL)
   \item{X}{\code{data.frame}, \code{matrix}, or \code{vector} of inputs \code{X}. Regressors. }
   \item{prior}{Indicating shrinkage prior to use. \code{"horseshoe"} for approximate horseshoe prior (default), \code{"laplace"} for laplace prior, \code{"ridge"} for ridge prior, \code{"sharkfin"} for "sharkfin" prior and \code{"nonlocal"} for nonlocal prior.}
   \item{block_vec}{A vector indicating number of regressors in each block. Sum of all entries should be the same as number of regressors. The default value is \code{block_vec = rep(1, p)}, put every regressor in its own block (slice-within-Gibbs sampler)}
+  \item{penalize}{A vector indicating shrink regressors or not. It's length should be the same as number of regressors. \code{1} indicates shrink corresponding coefficient, \code{0} indicates no shrinkage. The default value is \code{rep(1, p)}, shrink all coefficients}
   \item{sigma}{Initial value of residual standard error. The default value is half of standard error of \code{Y}.}
   \item{s2, kap2}{Parameter of prior over sigma, an inverse gamma prior with rate s2 and shape s2.}
   \item{N}{Number of posterior samples (after burn-in).}
@@ -50,7 +51,7 @@ prior_mean = NULL, prob_vec = NULL)
 
 
 \examples{
-p = 20
+p = 10
 n = 100
 
 kappa = 1.25

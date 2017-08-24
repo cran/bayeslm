@@ -35,18 +35,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // bayeslm
-List bayeslm(arma::mat Y, arma::mat X, arma::vec beta_hat, arma::vec beta, arma::uvec penalize, arma::vec block_vec, arma::vec rank_vec, int prior_type, Rcpp::Nullable<Rcpp::Function> user_prior_function, double sigma, double s2, double kap2, int nsamps, int burn, int skip, double vglobal, bool verb, bool icept, bool standardize, bool singular);
-RcppExport SEXP bayeslm_bayeslm(SEXP YSEXP, SEXP XSEXP, SEXP beta_hatSEXP, SEXP betaSEXP, SEXP penalizeSEXP, SEXP block_vecSEXP, SEXP rank_vecSEXP, SEXP prior_typeSEXP, SEXP user_prior_functionSEXP, SEXP sigmaSEXP, SEXP s2SEXP, SEXP kap2SEXP, SEXP nsampsSEXP, SEXP burnSEXP, SEXP skipSEXP, SEXP vglobalSEXP, SEXP verbSEXP, SEXP iceptSEXP, SEXP standardizeSEXP, SEXP singularSEXP) {
+List bayeslm(arma::mat Y, arma::mat X, arma::uvec penalize, arma::vec block_vec, int prior_type, Rcpp::Nullable<Rcpp::Function> user_prior_function, double sigma, double s2, double kap2, int nsamps, int burn, int skip, double vglobal, bool verb, bool icept, bool standardize, bool singular);
+RcppExport SEXP bayeslm_bayeslm(SEXP YSEXP, SEXP XSEXP, SEXP penalizeSEXP, SEXP block_vecSEXP, SEXP prior_typeSEXP, SEXP user_prior_functionSEXP, SEXP sigmaSEXP, SEXP s2SEXP, SEXP kap2SEXP, SEXP nsampsSEXP, SEXP burnSEXP, SEXP skipSEXP, SEXP vglobalSEXP, SEXP verbSEXP, SEXP iceptSEXP, SEXP standardizeSEXP, SEXP singularSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type beta_hat(beta_hatSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::uvec >::type penalize(penalizeSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type block_vec(block_vecSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type rank_vec(rank_vecSEXP);
     Rcpp::traits::input_parameter< int >::type prior_type(prior_typeSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::Function> >::type user_prior_function(user_prior_functionSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
@@ -60,7 +57,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type icept(iceptSEXP);
     Rcpp::traits::input_parameter< bool >::type standardize(standardizeSEXP);
     Rcpp::traits::input_parameter< bool >::type singular(singularSEXP);
-    rcpp_result_gen = Rcpp::wrap(bayeslm(Y, X, beta_hat, beta, penalize, block_vec, rank_vec, prior_type, user_prior_function, sigma, s2, kap2, nsamps, burn, skip, vglobal, verb, icept, standardize, singular));
+    rcpp_result_gen = Rcpp::wrap(bayeslm(Y, X, penalize, block_vec, prior_type, user_prior_function, sigma, s2, kap2, nsamps, burn, skip, vglobal, verb, icept, standardize, singular));
     return rcpp_result_gen;
 END_RCPP
 }

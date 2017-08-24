@@ -40,10 +40,11 @@ List horseshoe(arma::mat Y, arma::mat X, arma::uvec penalize, arma::vec block_ve
             Y = Y / sdy;
         }
         X = arma::join_rows(arma::ones<mat>(n, 1), X);
-        block_vec = join_cols(ones<vec>(1), block_vec);
+        block_vec = join_cols(ones<vec>(1), block_vec); // put intercept in the first block
         p = p + 1;
         N_blocks = N_blocks + 1;
         sdx = join_rows(ones<mat>(1,1), sdx);
+        penalize = arma::join_cols(arma::zeros<uvec>(1), penalize); // add one indicator of penalization for intercept. Do not penalize intercept    
     }else{
         if(standardize == true){
             Y = scaling(Y);
@@ -56,7 +57,7 @@ List horseshoe(arma::mat Y, arma::mat X, arma::uvec penalize, arma::vec block_ve
     arma::mat YY = trans(Y) * Y;
     arma::mat YX = trans(Y) * X;
     arma::mat XX = trans(X) * X;
-    penalize = find(penalize > 0);
+    arma::uvec penalize_index = find(penalize > 0);
 
     /*
     the input of penalize is (0,1,1,0,1...)
@@ -176,7 +177,7 @@ List horseshoe(arma::mat Y, arma::mat X, arma::uvec penalize, arma::vec block_ve
             nu = s * nu;
 
             // acceptance threshold
-            priorcomp = betaprior(b.rows(block_indexes(i), block_indexes(i+1)-1) , vglobal * v.rows(block_indexes(i), block_indexes(i+1)-1), prior_type, user_prior_function)- log_normal_density_matrix(b.rows(block_indexes(i), block_indexes(i+1)-1), eye<mat>(block_vec(i), block_vec(i)) / pow(s,2) / eta, singular);
+            priorcomp = log_horseshoe_approx_prior(b.rows(block_indexes(i), block_indexes(i+1)-1) , vglobal, penalize.rows(block_indexes(i), block_indexes(i+1)-1))- log_normal_density_matrix(b.rows(block_indexes(i), block_indexes(i+1)-1), eye<mat>(block_vec(i), block_vec(i)) / pow(s,2) / eta, singular);
 
             u = arma::as_scalar(randu(1));
 
@@ -198,7 +199,7 @@ List horseshoe(arma::mat Y, arma::mat X, arma::uvec penalize, arma::vec block_ve
                 b.subvec(block_indexes(i), block_indexes(i+1) - 1) = betaprop + beta_hat_block;
 
             }else{
-                while (betaprior(beta_hat_block + betaprop, vglobal * v.subvec(block_indexes(i), block_indexes(i+1)-1), prior_type, user_prior_function) - log_normal_density_matrix(beta_hat_block + betaprop, eye<mat>(block_vec(i), block_vec(i)) / pow(s,2) / eta, singular) < ly){
+                while (log_horseshoe_approx_prior(beta_hat_block + betaprop, vglobal, penalize.rows(block_indexes(i), block_indexes(i+1)-1)) - log_normal_density_matrix(beta_hat_block + betaprop, eye<mat>(block_vec(i), block_vec(i)) / pow(s,2) / eta, singular) < ly){
                     
                     loopcount += 1;
 
@@ -226,13 +227,10 @@ List horseshoe(arma::mat Y, arma::mat X, arma::uvec penalize, arma::vec block_ve
         // update the global shrinkage parameter
         vgprop = exp(log(vglobal) + arma::as_scalar(randn(1)) * 0.05);
 
-        if(icept == false){
-            // if there is no intercept, pass the full vector
-            ratio = exp(betaprior(b.elem(penalize), s * vgprop * v.elem(penalize), prior_type, user_prior_function) + log_normal_density(vgprop, 0.0, 100.0)  - betaprior(b.elem(penalize), s * vglobal  * v.elem(penalize), prior_type, user_prior_function) - log_normal_density(vglobal, 0.0, 100.0)  +log(vgprop) - log(vglobal));
-        }else{
-            // else, do not consider the intercept when evaluating prior function
-            ratio = exp(betaprior(b.rows(1,p-1), s * vgprop * v.subvec(1,p-1), prior_type, user_prior_function) + log_normal_density(vgprop, 0.0, 100.0)  - betaprior(b.rows(1,p-1), s * vglobal  * v.subvec(1,p-1), prior_type, user_prior_function) - log_normal_density(vglobal, 0.0, 100.0)  +log(vgprop) - log(vglobal));
-        }    
+
+        // if there is no intercept, pass the full vector
+        ratio = exp(log_horseshoe_approx_prior(b, s * vgprop, penalize) + log_normal_density(vgprop, 0.0, 100.0)  - log_horseshoe_approx_prior(b, s * vglobal, penalize) - log_normal_density(vglobal, 0.0, 100.0)  +log(vgprop) - log(vglobal));
+
 
         if(as_scalar(randu(1)) < ratio){
             vglobal = vgprop;
