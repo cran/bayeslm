@@ -25,3 +25,23 @@
 #     .Call('_bayeslm_ridge', PACKAGE = 'bayeslm', Y, X, penalize, block_vec, prior_type, sigma, s2, kap2, nsamps, burn, skip, vglobal, verb, icept, standardize, singular)
 # }
 
+horseshoe_cpp_loop = function(Y, X, penalize, block_vec, prior_type, user_prior_function, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular){
+            .Call('bayeslm_horseshoe', PACKAGE = 'bayeslm', Y, X, penalize, block_vec, prior_type, user_prior_function, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular)
+}
+
+blasso_cpp_loop = function(Y, X, penalize, block_vec, prior_type, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular){
+            .Call('bayeslm_blasso', PACKAGE = 'bayeslm', Y, X, penalize, block_vec, prior_type, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular)
+}
+
+bridge_cpp_loop = function(Y, X, penalize, block_vec, prior_type, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular){
+            .Call('bayeslm_ridge', PACKAGE = 'bayeslm', Y, X, penalize, block_vec, prior_type, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular)
+}
+
+nonlocal_cpp_loop = function(Y, X, prior_mean, penalize, block_vec, prior_type, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular){
+            .Call('bayeslm_nonlocal', PACKAGE = 'bayeslm', Y, X, prior_mean, penalize, block_vec, prior_type, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular)
+}
+
+sharkfin_cpp_loop = function(Y, X, prob_vec, penalize, block_vec, prior_type, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular){
+            .Call('bayeslm_sharkfin', PACKAGE = 'bayeslm', Y, X, prob_vec, penalize, block_vec, prior_type, sigma, s2, kap2, N, burnin, thinning, vglobal, verb, icept, standardize, singular)
+}
+
