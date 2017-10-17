@@ -8,7 +8,7 @@ blocked elliptical slice sampler, non-local prior
 */
 
 // [[Rcpp::export]]
-List nonlocal(arma::mat Y, arma::mat X, arma::vec prior_mean, arma::uvec penalize, arma::vec block_vec, int prior_type = 1, double sigma = 0.5, double s2 = 4, double kap2 = 16,  int nsamps = 10000, int burn = 1000, int skip = 1, double vglobal = 1, bool verb = false, bool icept = false, bool standardize = true, bool singular = false){
+List nonlocal(arma::mat Y, arma::mat X, arma::vec prior_mean, arma::uvec penalize, arma::vec block_vec, int prior_type = 1, double sigma = 0.5, double s2 = 4, double kap2 = 16,  int nsamps = 10000, int burn = 1000, int skip = 1, double vglobal = 1, bool verb = false, bool icept = false, bool standardize = true, bool singular = false, double cc = 1.0){
 
     clock_t t = clock();
 
@@ -78,7 +78,7 @@ List nonlocal(arma::mat Y, arma::mat X, arma::vec prior_mean, arma::uvec penaliz
 
 
     arma::mat Sigma_inv = XX;
-    double eta = 1.0; // 1/c in the paper, precision of the prior
+    double eta = 1.0 / cc; // 1/c in the paper, precision of the prior
     arma::mat M0;
     arma::mat Sigma;
     
