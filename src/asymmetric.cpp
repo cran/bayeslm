@@ -8,7 +8,7 @@ blocked elliptical slice sampler, shark-fin prior
 */
 
 // [[Rcpp::export]]
-List sharkfin(arma::mat Y, arma::mat X, arma::vec prob_vec, arma::uvec penalize, arma::vec block_vec, int prior_type = 1, double sigma = 0.5, double s2 = 4, double kap2 = 16,  int nsamps = 10000, int burn = 1000, int skip = 1, double vglobal = 1, bool verb = false, bool icept = false, bool standardize = true, bool singular = false, double cc = 1.0){
+List sharkfin(arma::mat Y, arma::mat X, arma::vec prob_vec, arma::uvec penalize, arma::vec block_vec, int prior_type = 1, double sigma = 0.5, double s2 = 4, double kap2 = 16,  int nsamps = 10000, int burn = 1000, int skip = 1, double vglobal = 1, bool verb = false, bool icept = false, bool standardize = true, bool singular = false, bool scale_sigma_prior = true, arma::vec cc = NULL){
 
     clock_t t = clock();
 
@@ -80,13 +80,13 @@ List sharkfin(arma::mat Y, arma::mat X, arma::vec prob_vec, arma::uvec penalize,
 
 
     arma::mat Sigma_inv = XX;
-    double eta = 1.0 / cc; // 1/c in the paper, precision of the prior
+    arma::vec eta = 1.0 / cc; // 1/c in the paper, precision of the prior
     arma::mat M0;
     arma::mat Sigma;
     
     if(singular == true){
         // if matrix X is singular, use the "conjugate regression" type adjustment
-        M0 = eta * eye<mat>(p, p);
+        M0 = arma::diagmat(eta);
         Sigma = inv(XX + M0);
         beta_hat = Sigma * (trans(YX));
     }else{
@@ -178,7 +178,7 @@ List sharkfin(arma::mat Y, arma::mat X, arma::vec prob_vec, arma::uvec penalize,
             nu = s * nu;
 
             // acceptance threshold
-            priorcomp = log_asymmetric_prior(b.rows(block_indexes(i), block_indexes(i+1)-1), vglobal, prob_vec.subvec(i, i), penalize.rows(block_indexes(i), block_indexes(i+1)-1)) - log_normal_density_matrix(b.rows(block_indexes(i), block_indexes(i+1)-1), eye<mat>(block_vec(i), block_vec(i)) / pow(s,2) / eta, singular);
+            priorcomp = log_asymmetric_prior(b.rows(block_indexes(i), block_indexes(i+1)-1), vglobal, s, prob_vec.subvec(i, i), penalize.rows(block_indexes(i), block_indexes(i+1)-1), scale_sigma_prior) - log_normal_density_matrix(b.rows(block_indexes(i), block_indexes(i+1)-1), arma::diagmat(eta.rows(block_indexes(i), block_indexes(i+1)-1)) / pow(s, 2), singular);
 
             u = arma::as_scalar(randu(1));
 
@@ -200,7 +200,7 @@ List sharkfin(arma::mat Y, arma::mat X, arma::vec prob_vec, arma::uvec penalize,
                 b.subvec(block_indexes(i), block_indexes(i+1) - 1) = betaprop + beta_hat_block;
 
             }else{
-                 while (log_asymmetric_prior(beta_hat_block + betaprop, vglobal, prob_vec.subvec(i, i), penalize.rows(block_indexes(i), block_indexes(i+1)-1)) - log_normal_density_matrix(beta_hat_block + betaprop, eye<mat>(block_vec(i), block_vec(i)) / pow(s,2) / eta, singular) < ly){
+                 while (log_asymmetric_prior(beta_hat_block + betaprop, vglobal, s, prob_vec.subvec(i, i), penalize.rows(block_indexes(i), block_indexes(i+1)-1), scale_sigma_prior) - log_normal_density_matrix(beta_hat_block + betaprop, arma::diagmat(eta.rows(block_indexes(i), block_indexes(i+1)-1)) / pow(s,2), singular) < ly){
                     
                     loopcount += 1;
 
@@ -229,7 +229,7 @@ List sharkfin(arma::mat Y, arma::mat X, arma::vec prob_vec, arma::uvec penalize,
         vgprop = exp(log(vglobal) + arma::as_scalar(randn(1)) * 0.05);
 
 
-        ratio = exp(log_asymmetric_prior(b, vgprop, prob_vec, penalize) + log_normal_density(vgprop, 0.5, 100)  - log_asymmetric_prior(b, vglobal, prob_vec, penalize) - log_normal_density(vglobal, 0.5, 100)  +log(vgprop) - log(vglobal));
+        ratio = exp(log_asymmetric_prior(b, vgprop, s, prob_vec, penalize, scale_sigma_prior) + log_normal_density(vgprop, 0.5, 100)  - log_asymmetric_prior(b, vglobal, s, prob_vec, penalize, scale_sigma_prior) - log_normal_density(vglobal, 0.5, 100)  +log(vgprop) - log(vglobal));
 
  
         if(as_scalar(randu(1)) < ratio){
