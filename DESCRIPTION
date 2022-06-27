@@ -2,19 +2,29 @@ Package: bayeslm
 Type: Package
 Title: Efficient Sampling for Gaussian Linear Regression with Arbitrary
         Priors
-Version: 0.8.0
-Date: 2018-6-17
-Author: P. Richard Hahn, Jingyu He, Hedibert Lopes
-Maintainer: Jingyu He <jingyu.he@chicagobooth.edu>
-Description: Efficient sampling for Gaussian linear regression with arbitrary priors, Hahn, He and Hedibert (2018) <arXiv:1806.05738>.
+Version: 1.0.1
+Date: 2022-6-25
+Authors@R: c(
+    person("Jingyu", "He", , "jingyuhe@cityu.edu.hk", c("aut", "cre")),
+    person("P. Richard", "Hahn", role = "aut"),
+    person("Hedibert", "Lopes", role = "aut"),
+    person("Andrew", "Herren", role = "ctb"))
+Maintainer: Jingyu He <jingyuhe@cityu.edu.hk>
+Description: Efficient sampling for Gaussian linear regression with arbitrary priors, Hahn, He and Lopes (2018) <arXiv:1806.05738>.
 License: LGPL (>= 2)
-Imports: Rcpp (>= 0.12.7), stats, graphics, grDevices, coda,
+Imports: Rcpp (>= 0.12.7), stats, graphics, grDevices, coda, methods,
         RcppParallel
 SystemRequirements: GNU make
 Depends: R (>= 2.10)
-URL: http://jingyuhe.com/software.html
+URL: https://github.com/JingyuHe/bayeslm
 NeedsCompilation: yes
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
-Packaged: 2018-06-18 02:48:57 UTC; jingyuhe
+Suggests: rmarkdown, knitr
+VignetteBuilder: knitr
+Packaged: 2022-06-27 02:09:32 UTC; jingyuhe
+Author: Jingyu He [aut, cre],
+  P. Richard Hahn [aut],
+  Hedibert Lopes [aut],
+  Andrew Herren [ctb]
 Repository: CRAN
-Date/Publication: 2018-06-18 17:57:57 UTC
+Date/Publication: 2022-06-27 22:50:02 UTC
